@@ -4,22 +4,27 @@ using Mellon.HangFire.Jobs;
 
 namespace Mellon.HangFire.Worker.Jobs;
 
-public class NotificationProcessing : INotificationProcessing
+public class NotificationTrigger : INotificationTrigger
 {
     private readonly TenantContext _jobContext;
 
-    public NotificationProcessing(IServiceProvider serviceProvider)
+    public NotificationTrigger(
+        TenantContext jobContext)
     {
-        _jobContext = serviceProvider.GetRequiredService<TenantContext>();
+        _jobContext = jobContext;
     }
 
-    public async Task NotifyAsync(
+    public async Task ExecuteAsync(
         string clientName,
         PerformContext context)
     {
+        _jobContext.SetClient(clientName);
+
+        var logger = context.CreateLoggerForPerformContext<EmailSender>();
+
         var progress = context.WriteProgressBar();
 
-        context.WriteLine($"Notifying the client {_jobContext.ClientName}");
+        logger.Warning($"Starting to send notification for the client {_jobContext.ClientName}");
 
         await Task.Delay(10000);
 
@@ -41,6 +46,6 @@ public class NotificationProcessing : INotificationProcessing
 
         progress.SetValue(100);
 
-        context.WriteLine($"the client {_jobContext.ClientName} was notified");
+        logger.Warning($"Notification to {_jobContext.ClientName}");
     }
 }

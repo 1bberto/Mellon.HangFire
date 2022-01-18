@@ -1,10 +1,10 @@
 ﻿using Hangfire;
+using Hangfire.Server;
 
-namespace Mellon.HangFire.Jobs
+namespace Mellon.HangFire.Jobs;
+
+[Queue("crons")]
+public interface IEmailSender
 {
-    [Queue("crons")]
-    public interface IEmailSender
-    {
-        Task SendEmailAsync(string clientName, string email);
-    }
+    Task SendEmailAsync(string clientName, string email, PerformContext context);
 }

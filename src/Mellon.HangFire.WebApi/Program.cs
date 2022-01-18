@@ -20,6 +20,6 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
-app.UseHangfireDashboard("", new DashboardOptions { });
+app.UseHangfireDashboard("");
 
 app.Run();

@@ -16,7 +16,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Mellon.HangFire.Worker\Mellon.HangFire.Worker.csproj" />
+		<ProjectReference Include="..\Mellon.HangFire.Jobs\Mellon.HangFire.Jobs.csproj" />
 	</ItemGroup>
 
 </Project>

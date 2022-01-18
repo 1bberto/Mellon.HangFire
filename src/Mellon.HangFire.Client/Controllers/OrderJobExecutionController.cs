@@ -1,5 +1,5 @@
 ﻿using Hangfire;
-using Mellon.HangFire.Worker.Jobs;
+using Mellon.HangFire.Jobs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mellon.HangFire.Client.Controllers;
@@ -20,7 +20,7 @@ public class OrderJobExecutionController : ControllerBase
     [HttpPost("send-email")]
     public IActionResult SendEmailAsync(SendEmailRequest sendEmailRequest)
     {
-        _recurringJobManager.AddOrUpdate<EmailSender>(
+        _recurringJobManager.AddOrUpdate<IEmailSender>(
             $"{sendEmailRequest.ClientName}-send-email",
             job => job.SendEmailAsync(
                 sendEmailRequest.ClientName,
@@ -34,7 +34,7 @@ public class OrderJobExecutionController : ControllerBase
     [HttpPost("notify")]
     public IActionResult NotifyAsync(NotifyRequest notifyRequest)
     {
-        _recurringJobManager.AddOrUpdate<NotificationProcessing>(
+        _recurringJobManager.AddOrUpdate<INotificationProcessing>(
             $"{notifyRequest.ClientName}-notification-processing",
             job => job.NotifyAsync(
                 notifyRequest.ClientName,
@@ -43,6 +43,20 @@ public class OrderJobExecutionController : ControllerBase
 
         return Accepted();
     }
+
+    [HttpPost("notification-trigger")]
+    public IActionResult NotifyTriggerAsync(NotifyRequest notifyRequest)
+    {
+        _recurringJobManager.AddOrUpdate<INotificationTrigger>(
+            $"{notifyRequest.ClientName}-notification-trigger",
+            job => job.ExecuteAsync(
+                notifyRequest.ClientName,
+                null),
+            notifyRequest.CronExpression);
+
+        return Accepted();
+    }
+
     public class NotifyRequest
     {
         public string ClientName { get; set; }
